@@ -1,76 +1,65 @@
 package com.cibertec.cl2.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "tb_supervisor")
+@Table(name = "Autores")
 public class Autores {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "cod_supervisor")
+	@Column(name = "codigo")
 	private Integer codigo;
-	@Column(name = "nom_supervisor")
+	@Column(name = "nombre")
 	private String nombre;
-	@Column(name = "ape_supervisor")
-	private String apellido;
-	@Column(name = "dni_supervisor")
-	private Integer dni;
-	@Column(name = "num_hijos")
-	private Integer numHijos;
-	@Column(name = "sueldo")
-	private double sueldo;
-	@ManyToOne
-	@JoinColumn(name="cod_sucursal")
-	private Libros sucursal;
+	@Column(name = "apellidos")
+	private String apellidos;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "autor")
+	private List<Libros> listaLibros;
+
 	public Integer getCodigo() {
 		return codigo;
 	}
+
 	public void setCodigo(Integer codigo) {
 		this.codigo = codigo;
 	}
+
 	public String getNombre() {
 		return nombre;
 	}
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	public String getApellido() {
-		return apellido;
+
+	public String getApellidos() {
+		return apellidos;
 	}
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
+
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
 	}
-	public Integer getDni() {
-		return dni;
+
+	public List<Libros> getListaLibros() {
+		return listaLibros;
 	}
-	public void setDni(Integer dni) {
-		this.dni = dni;
+
+	public void setListaLibros(List<Libros> listaLibros) {
+		this.listaLibros = listaLibros;
 	}
-	public Integer getNumHijos() {
-		return numHijos;
-	}
-	public void setNumHijos(Integer numHijos) {
-		this.numHijos = numHijos;
-	}
-	public double getSueldo() {
-		return sueldo;
-	}
-	public void setSueldo(double sueldo) {
-		this.sueldo = sueldo;
-	}
-	public Libros getSucursal() {
-		return sucursal;
-	}
-	public void setSucursal(Libros sucursal) {
-		this.sucursal = sucursal;
-	}
+
 	
 	
 }

@@ -89,17 +89,17 @@
 </head>
 <body>
 	<div class="container">
-		<h2 class="text-center">Consulta de Supervisor por Sucursal</h2>
+		<h2 class="text-center">Consulta de Libros por Autor</h2>
 		<form>
 		   <div class="form-row mt-4">
 			    <div class="col-auto">
-			       <label for="exampleInputPassword1">Seleccione Sucursal</label>
+			       <label for="exampleInputPassword1">Seleccione Autor</label>
 			    </div>
 			    <div class="col-auto">
-			      	 <select  class="form-control" name="condicion" id="idSucursalBuscar">
-				      <option >[Seleccione Sucursal]</option>
-				      <option th:each="bean:${sucursal}"  th:value="${bean.codigo}"
-				      			th:utext="${bean.nombre}"
+			      	 <select  class="form-control" name="condicion" id="buscar">
+				      <option >[Seleccione Autor]</option>
+				      <option th:each="bean:${autores}"  th:value="${bean.codigo}"
+				      			th:utext="${bean.nombre + ' '+ bean.apellidos}"
 				      />
 				    </select>
 			    </div>
@@ -110,25 +110,23 @@
 		</form>
 		
 		<div class="mt-4">
-			<table id="tableSupervisor" class="table table-striped table-bordered" style="width:100%">
+			<table id="tableLibros" class="table table-striped table-bordered" style="width:100%">
 		        <thead>
 		            <tr>
 		                <th>Codigo</th>
 		                <th>Nombre</th>
-		                <th>Apellido</th>
-		                <th>Dni</th>
-		                <th>Hijos</th>
-		                <th>Sueldo</th>
-		                <th>Sucursal</th>
+		                <th>Precio</th>
+		                <th>Autor</th>
+		                <th>Genero</th>
+		                <th>Estado</th>
+		                <th></th>
 		            </tr>
 		        </thead>
 		        <tbody>
 				</tbody>
 			</table>	
-		</div>
-		
-		<!-- INICIO - Modal EDITAR-->
-		<div class="modal fade" id="modalSupervisor" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		</div>	
+		<div class="modal fade" id="modalLibros" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered">
 		    <div class="modal-content">
 		      <div class="modal-header">
@@ -138,7 +136,7 @@
 		        </button>
 		      </div>
 		      <div class="modal-body">
-		        <form id="formSupervisor" method="post" th:action="@{/Supervisor/eliminar}">
+		        <form id="formLibros" method="post" th:action="@{/Libros/eliminar}">
 				  <div class="form-group">
 				    <label for="exampleInputEmail1">Codigo</label>
 				    <input type="text" class="form-control" id="idCodigo" name="codigo" readonly>
@@ -148,29 +146,21 @@
 				    <input type="text" class="form-control" id="idNombre" readonly>
 				  </div>
 				  <div class="form-group">
-				    <label for="exampleInputPassword1">Apellido</label>
-				    <input type="text" class="form-control" id="idApellidos" readonly>
+				    <label for="exampleInputPassword1">Precio</label>
+				    <input type="text" class="form-control" id="idPrecio" readonly>
 				  </div>
 				  <div class="form-group">
-				    <label for="exampleInputPassword1">Dni</label>
-				    <input type="text" class="form-control" id="idDni" readonly>
+				    <label for="exampleInputPassword1">Autor</label>
+				    <input type="text" class="form-control" id="idAutor" readonly>
 				  </div><div class="form-group">
-				    <label for="exampleInputPassword1">Hijos</label>
-				    <input type="text" class="form-control" id="idHijos" readonly>
+				    <label for="exampleInputPassword1">Genero</label>
+				    <input type="text" class="form-control" id="idGenero" readonly>
 				  </div>
 				  <div class="form-group">
-				    <label for="exampleInputPassword1">Sueldo</label>
-				    <input type="text" class="form-control" id="idSueldo" readonly>
+				    <label for="exampleInputPassword1">Estado</label>
+				    <input type="text" class="form-control" id="idEstado" readonly>
 				  </div>
-				  <div class="form-group">
-				    <label for="exampleInputPassword1">Sucursal</label>
-				    <select class="form-control" name="condicion" id="idSucursal">
-				      <option value="">[Seleccione Sucursal]</option>
-				      <option th:each="bean:${sucursal}"
-				      			th:utext="${bean.nombre}"
-				      />
-				    </select>
-				  </div>				  
+				  				  
 				  
 				  <div class="modal-footer">
 			      	<button type="button" class="btn btn-primary" id="btn-eliminar">Eliminar</button>
@@ -181,9 +171,6 @@
 		    </div>
 		  </div>
 		</div>
-		<!-- FIN - Modal PARA EDITAR-->		
-		
-		
 	</div>
 	<!-- liberia completa de JQUERY -->
 	<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -208,42 +195,38 @@
 	<script>
 		//evento clic al botón con ID btn-consultar
 		$(document).on("click","#btn-consultar",function(){
-			let num=$("#idSucursalBuscar").val();
-			$("#tableSupervisor tbody").empty();
-			$.get("consulta?codSucursal="+num,function(response){
+			let num=$("#buscar").val();
+			$("#tableLibros tbody").empty();
+			$.get("consulta?codAutor="+num,function(response){
 				$.each(response,function(index,item){
-					$("#tableSupervisor").append("<tr><td>"+item.codigo+"</td><td>"+item.nombre+"</td><td>"+
-												item.apellido+"</td><td>"+item.dni+"</td><td>"+item.numHijos+"</td><td>"+item.sueldo+"</td><td>"+
-												item.sucursal.nombre+"</td><td>"+
-					"<button type='button' class='btn btn-success' data-toggle='modal' data-target='#modalSupervisor'>Editar</button></td><tr>");					
+					$("#tableLibros").append("<tr><td>"+item.codigo+"</td><td>"+item.nombre+"</td><td>"+
+												item.precio+"</td><td>"+item.autor.nombre+"</td><td>"+item.genero.nombre+"</td><td>"+item.estado+"</td><td>"+
+					"<button type='button' class='btn btn-success' data-toggle='modal' data-target='#modalLibros'>Seleccione</button></td><tr>");					
 				})
 			})			
 		})
-	//evento clic al botón con CLASE btn-success
-	$(document).on("click",".btn-success",function(){
-		let cod,nom,ape,dni,hijos,sueldo,sucur;
+$(document).on("click",".btn-success",function(){
+		let cod,nombre,precio,autor,genero,estado;
 		cod=$(this).parents("tr").find("td")[0].innerHTML;
-		nom=$(this).parents("tr").find("td")[1].innerHTML;
-		ape=$(this).parents("tr").find("td")[2].innerHTML;
-		dni=$(this).parents("tr").find("td")[3].innerHTML;
-		hijos=$(this).parents("tr").find("td")[4].innerHTML;
-		sueldo=$(this).parents("tr").find("td")[5].innerHTML;
-		sucur=$(this).parents("tr").find("td")[6].innerHTML;
-		tableSupervisor
+		nombre=$(this).parents("tr").find("td")[1].innerHTML;
+		precio=$(this).parents("tr").find("td")[2].innerHTML;
+		autor=$(this).parents("tr").find("td")[3].innerHTML;
+		genero=$(this).parents("tr").find("td")[4].innerHTML;
+		estado=$(this).parents("tr").find("td")[5].innerHTML;
+		tableLibros
 		$("#idCodigo").val(cod);
-		$("#idNombre").val(nom);
-		$("#idApellidos").val(ape);
-		$("#idDni").val(dni);
-		$("#idHijos").val(hijos);		
-		$("#idSueldo").val(sueldo);	
-		$("#idSucursal").val(sucur);	
+		$("#idNombre").val(nombre);
+		$("#idPrecio").val(precio);
+		$("#idAutor").val(autor);
+		$("#idGenero").val(genero);		
+		$("#idEstado").val(estado);	
 		
 	})	
 	//asignar evento click al bot�n con ID "btn-eliminar"
 	$(document).on("click","#btn-eliminar",function(e){
 		alertify.confirm("SISTEMA","Seguro de eliminar!",
 				  function(){//si
-				  	$("#formSupervisor").submit();
+				  	$("#formLibros").submit();
 				  },
 				  function(){//no 
 					alertify.error('Cancelado!')
